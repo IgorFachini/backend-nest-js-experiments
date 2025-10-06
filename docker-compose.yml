@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: nestjs_app
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: nest
+      DB_USER: root
+      DB_PASS: password
+      DB_MIN_POOL_SIZE: 1
+      DB_MAX_POOL_SIZE: 10
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    command: npm run start:dev
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: nest
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  db_data:
+  node_modules:
