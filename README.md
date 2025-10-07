@@ -91,3 +91,29 @@ Useful commands
   ```
   docker-compose down
   ```
+
+## CORS Configuration
+
+The server enables CORS globally in `main.ts`.
+
+Environment variable: `CORS_ORIGINS`
+
+Format: comma-separated list of allowed origins.
+
+Example:
+```
+CORS_ORIGINS=http://localhost:5173,http://localhost:4200
+```
+
+Behavior:
+- If `CORS_ORIGINS` is set, only those origins are allowed.
+- If not set, all origins are allowed (development convenience). For production, set an explicit list.
+
+Headers allowed: `Content-Type, Authorization`
+
+Credentials: enabled (`credentials: true`). If your frontend needs cookies, keep this. If you only use Authorization headers, it's still fine.
+
+If you face a CORS error in the browser:
+1. Confirm the frontend origin matches exactly (scheme, host, port) one of the entries in `CORS_ORIGINS`.
+2. Ensure no trailing slashes in the origin list.
+3. Restart the backend after changing env vars.

@@ -7,7 +7,23 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  // Swagger / OpenAPI setup
+  const rawOrigins = process.env.CORS_ORIGINS;
+  let origins: string[] | boolean;
+  if (rawOrigins && rawOrigins.trim().length > 0) {
+    origins = rawOrigins
+      .split(',')
+      .map((o) => o.trim())
+      .filter((o) => o.length > 0);
+  } else {
+    origins = true;
+  }
+  app.enableCors({
+    origin: origins,
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+    exposedHeaders: 'Authorization',
+  });
   const config = new DocumentBuilder()
     .setTitle('Backend NestJS Experiments')
     .setDescription('API documentation')
@@ -16,7 +32,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
-  // Obtém a instância do Sequelize
   const sequelize = app.get(Sequelize);
   try {
     await sequelize.authenticate();

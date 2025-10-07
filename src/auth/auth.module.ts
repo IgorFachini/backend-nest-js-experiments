@@ -5,14 +5,23 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './jwt.strategy';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { RefreshToken } from './refresh-token.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     UserModule,
     PassportModule,
-    JwtModule.register({
-      secret: 'SECRET_KEY', // Troque por variável de ambiente em produção
-      signOptions: { expiresIn: '1d' },
+    SequelizeModule.forFeature([RefreshToken]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        secret: cfg.get<string>('JWT_SECRET', 'SECRET_KEY'),
+        signOptions: { expiresIn: cfg.get<string>('ACCESS_TOKEN_TTL', '15m') },
+      }),
     }),
   ],
   providers: [AuthService, JwtStrategy],
