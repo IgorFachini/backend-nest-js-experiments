@@ -33,6 +33,8 @@ Examples:
   - `email` (string, required)
   - `password` (string, required)
 - Response: created user object (depends on `UserService.create` implementation)
+ - Errors:
+   - `409 Conflict` if the email is already registered (returns JSON message)
 
 ### POST /auth/login
 - Description: Login and obtain a JWT token
@@ -42,6 +44,15 @@ Examples:
   - `email` (string, required)
   - `password` (string, required)
 - Response: Typically an object with an `access_token` string (depends on `AuthService.login` implementation)
+
+### GET /auth/me
+- Description: Returns authenticated user profile (requires Bearer JWT)
+- Path: `/auth/me`
+- Method: `GET`
+- Auth: Bearer token (Authorization: `Bearer <JWT>`)
+- Responses:
+  - `200 OK` user profile (id, email, name)
+  - `401 Unauthorized` if token missing/invalid
 
 
 ## DTOs

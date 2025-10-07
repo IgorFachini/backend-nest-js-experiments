@@ -47,6 +47,23 @@ describe('UserService', () => {
     expect(user.email).toBe(dto.email);
   });
 
+  it('create should throw ConflictException on duplicate email', async () => {
+    const email = 'dup@example.com';
+    // first call returns user (mock create), after that findOne should simulate found email
+    mockUserModel.findOne.mockImplementationOnce(() => Promise.resolve(null));
+    await service.create({ email, password: 'pass', name: 'Dup' } as any);
+    // next findOne call for same email returns a user signaling duplicate
+    mockUserModel.findOne.mockImplementationOnce(() =>
+      Promise.resolve({ id: 99, email, password: 'hash' }),
+    );
+    await expect(
+      service.create({ email, password: 'pass', name: 'Dup2' } as any),
+    ).rejects.toMatchObject({
+      status: 409,
+      message: 'Email already registered',
+    });
+  });
+
   it('findByEmail returns user when found', async () => {
     const user = await service.findByEmail('found@example.com');
     expect(user).toBeDefined();

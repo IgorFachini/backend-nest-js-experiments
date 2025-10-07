@@ -43,4 +43,17 @@ describe('User integration (sqlite in-memory)', () => {
     expect(found).toBeDefined();
     expect(found.email).toBe(dto.email);
   });
+
+  it('throws ConflictException when creating duplicate email', async () => {
+    const dto = {
+      email: 'dup-int@example.com',
+      password: 'password',
+      name: 'Dup Int',
+    };
+    await userService.create(dto as any);
+    await expect(userService.create(dto as any)).rejects.toMatchObject({
+      status: 409,
+      message: 'Email already registered',
+    });
+  });
 });
