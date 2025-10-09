@@ -30,4 +30,17 @@ export class UserService {
   async findById(id: number): Promise<User> {
     return this.userModel.findByPk(id);
   }
+
+  async createDefaultUser(userData: {
+    email: string;
+    password: string;
+    name?: string;
+  }): Promise<User> {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    return this.userModel.create({
+      email: userData.email,
+      password: hashedPassword,
+      name: userData.name || 'Default User',
+    });
+  }
 }

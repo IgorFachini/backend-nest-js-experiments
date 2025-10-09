@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { Sequelize } from 'sequelize-typescript';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppInitializationService } from './app-initialization.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,6 +37,10 @@ async function bootstrap() {
   try {
     await sequelize.authenticate();
     console.log('✅ Conexão com o banco de dados estabelecida com sucesso!');
+
+    // Inicializar dados padrão (usuário padrão, etc.)
+    const initService = app.get(AppInitializationService);
+    await initService.initialize();
   } catch (error) {
     console.error('❌ Falha ao conectar ao banco de dados:', error);
   }
