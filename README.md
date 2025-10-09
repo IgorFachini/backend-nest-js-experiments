@@ -2,6 +2,10 @@
 
 Simple NestJS backend for study.
 
+## Default user
+- Email: admin@example.com
+- Password: 123456
+
 ## Quick start (Docker Compose)
 
 Prerequisites
