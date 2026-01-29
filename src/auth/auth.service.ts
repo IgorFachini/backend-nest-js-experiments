@@ -31,7 +31,6 @@ export class AuthService {
       delete result.password;
       return result;
     }
-    return null;
   }
 
   async login(loginDto: LoginUserDto) {
@@ -116,11 +115,7 @@ export class AuthService {
     return { raw, expiresAt };
   }
 
-  private async buildAuthResponse(
-    userId: number,
-    email: string,
-    userSafe: any,
-  ) {
+  async buildAuthResponse(userId: number, email: string, userSafe: any) {
     const accessTtlSec = this.getAccessTokenTtlSeconds();
     const access_token = this.jwtService.sign(
       { sub: userId, email },
